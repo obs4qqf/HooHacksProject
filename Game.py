@@ -11,7 +11,7 @@ min_dimension = min(screen_width, screen_height)
 # STATIC VARIABLES
 DEFAULT_SCREEN_SIZE = (int(min_dimension / 1.5), int(min_dimension / 1.5))
 DEFAULT_SCREEN_BACKGROUND = 'white'
-DEFAULT_MINIGAME = testMiniGame.minigame
+DEBUG_MINIGAME = True
 
 
 
@@ -89,18 +89,22 @@ class testObject(GameObject):
 
 class Game:
 
+    
+
     def __init__(self):
 
         self.objects = {"Layer1":[],"Layer2":[],"Layer3":[],"Layer4":[],"Layer5":[],"Layer6":[],"Layer7":[],"Layer8":[],"Layer9":[],"Hidden":[]}
-        self.events = {"OnClick":[]}
+        self.events = {"OnMouseUp":[],"OnMouseDown":[],"OnMouseMove":[],"OnKeyDown":[],"OnKeyUp":[]}
 
         self.screen = pygame.display.set_mode(DEFAULT_SCREEN_SIZE, pygame.RESIZABLE, pygame.SCALED)
         self.board = BoardInfo(pygame.display.Info().current_w, pygame.display.Info().current_h, 10)
 
         self.background = DEFAULT_SCREEN_BACKGROUND
 
-        if(DEFAULT_MINIGAME != 0):
-            self.loadMinigame(DEFAULT_MINIGAME)
+        self.mousePosition = (0, 0)
+
+        if(DEBUG_MINIGAME == True):
+            self.loadMinigame(testMiniGame.minigame)
 
         #self.addObject(testObject())
 
@@ -142,8 +146,30 @@ class Game:
 
             elif event.type == pygame.MOUSEBUTTONUP:  # click detected
                 clicked_x, clicked_y = pygame.mouse.get_pos()  # gets raw pixels from click
+
+                for function in self.events["OnMouseUp"]:
+                    function(event.button)
+
                 grid_space_clicked = self.board.get_grid_from_pixels(clicked_x, clicked_y)  # convert to grid spaces
                 print(grid_space_clicked)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for function in self.events["OnMouseDown"]:
+                    function(event.button)
+
+            elif event.type == pygame.MOUSEMOTION:
+                for function in self.events["OnMouseMove"]:
+                    function(event.pos, event.rel)
+
+                self.mousePosition = event.pos
+
+            elif event.type == pygame.KEYDOWN:
+                for function in self.events["OnKeyDown"]:
+                    function(event.key)
+
+            elif event.type == pygame.KEYUP:
+                for function in self.events["OnKeyUp"]:
+                    function(event.key)
 
     def addObject(self, obj, layer="Layer1", isMinigame=True):
         self.objects[layer].append(obj)
@@ -180,6 +206,8 @@ class Game:
         self.minigame.exitGame()
         del self.minigame
 
+        self.background = DEFAULT_SCREEN_BACKGROUND
+
         for key in self.objects:
 
             for obj in self.objects[key]:
@@ -192,5 +220,12 @@ class Game:
                     else:
                         obj.set_visible(True)
 
+    def subscribeToEvent(self, function, event):
+        self.events[event].append(function)
+
+    def unsubscribeToEvent(self, function, event):
+        self.events[event].remove(function)
+
 if __name__ == "__main__":
     Game()
+
