@@ -56,8 +56,15 @@ class BoardInfo:
 
 class GameObject:
 
-    def __init__(self):
+    def __init__(self, pos=(0,0)):
         self.visible = True
+        self.pos = [pos[0], pos[1]]
+
+    def getRelativePos(self, camera):
+        relativePos = self.pos
+        relativePos[0] -= camera.x
+        relativePos[1] -= camera.y
+        return relativePos
 
     def set_visible(self, value):
 
@@ -74,18 +81,41 @@ class GameObject:
     def get_visible(self):
         return self.visible
 
-    def render(self, screen):
+    def render(self, screen, camera):
         #TODO verify screen is of correct type (couldnt figure out what type was called)
         #if(isinstance(screen, pygame.{SOMETHING})):
         #   log.error("Invalid screen type passed")
         pass
+
+class Camera:
+
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+
+class PhysicsObject(GameObject):
+
+    '''
+    Collision dimensions in form [width, height]
+    Position in form [x, y]
+    '''
+
+
+    def __init__(self, pos=(0,0), collisionDimensions=[10,10]):
+        super().__init__(pos)
+        self.collisionDimensions = collisionDimensions
+
+    def isColliding(self, otherObj):
+        if(self.pos[0] < otherObj.pos[0] + otherObj.collisionDimensions[0] and self.pos[0] + self.collisionDimensions[0] > otherObj.pos[0] and self.pos[1] < otherObj.pos[1] + otherObj.collisionDimensions[1] and self.pos[1] + self.collisionDimensions[1] > otherObj.pos[1]):
+            return True
+        return False
 
 class testObject(GameObject):
 
     def __init__(self):
         super().__init__()
 
-    def render(self, screen):
+    def render(self, screen, camera):
         pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(50, 50, 50, 50))
 
 class Game:
@@ -97,6 +127,9 @@ class Game:
 
         self.screen = pygame.display.set_mode(DEFAULT_SCREEN_SIZE, pygame.RESIZABLE, pygame.SCALED)
         self.board = BoardInfo(pygame.display.Info().current_w, pygame.display.Info().current_h, 10)
+        self.camera = Camera()
+
+        self.updateScreenDefinitions()
 
         self.background = DEFAULT_SCREEN_BACKGROUND
 
@@ -109,6 +142,10 @@ class Game:
         #self.addObject(testObject())
 
         self.gameLoop()
+
+    def updateScreenDefinitions(self):
+        self.screenHeight = pygame.display.Info().current_h
+        self.screenWidth = pygame.display.Info().current_w
 
     def gameLoop(self):
         while True:
@@ -130,7 +167,7 @@ class Game:
                 continue
 
             for value in self.objects[key]:
-                value.render(self.screen)
+                value.render(self.screen, self.camera)
 
         
 
