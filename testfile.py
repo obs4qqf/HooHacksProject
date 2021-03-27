@@ -1,5 +1,7 @@
 # hi there
 
-import pygame as pg
+import pygame
 
-pg.init()
+pygame.init()
+
+print(isinstance(pygame.display.set_mode((500,500), pygame.RESIZABLE, pygame.SCALED), pygame.surface))
