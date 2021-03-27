@@ -3,7 +3,7 @@ import logging as log
 import sys
 import pygame
 
-class PuzzlePiece(Game.NormalObject):
+class PuzzlePiece(Game.GameObject):
 
     def __init__(self, game, x, y, piece_number):
         super().__init__((x, y))

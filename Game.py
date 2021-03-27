@@ -111,14 +111,6 @@ class PhysicsObject(GameObject):
             return True
         return False
 
-class testObject(GameObject):
-
-    def __init__(self):
-        super().__init__()
-
-    def render(self, screen, camera):
-        pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(50, 50, 50, 50))
-
 class Game:
 
     def __init__(self):
