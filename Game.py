@@ -1,6 +1,7 @@
 import pygame
 import sys
 import logging as log
+import testMiniGame
 
 pygame.init()
 
@@ -10,6 +11,7 @@ min_dimension = min(screen_width, screen_height)
 # STATIC VARIABLES
 DEFAULT_SCREEN_SIZE = (int(min_dimension / 1.5), int(min_dimension / 1.5))
 DEFAULT_SCREEN_BACKGROUND = 'white'
+DEFAULT_MINIGAME = 0
 
 
 
@@ -95,7 +97,11 @@ class Game:
         self.screen = pygame.display.set_mode(DEFAULT_SCREEN_SIZE, pygame.RESIZABLE, pygame.SCALED)
         self.board = BoardInfo(pygame.display.Info().current_w, pygame.display.Info().current_h, 10)
 
-        self.addObject(testObject())
+        self.background = DEFAULT_SCREEN_BACKGROUND
+
+        self.loadMinigame(testMiniGame.minigame)
+
+        #self.addObject(testObject())
 
         self.gameLoop()
 
@@ -105,9 +111,9 @@ class Game:
             self.render()
 
     def render(self):
-        self.screen.fill(DEFAULT_SCREEN_BACKGROUND)
+        self.screen.fill(self.background)
 
-        example_squares(self.screen, self.board)
+        #example_squares(self.screen, self.board)
 
         for key in self.objects:
             if key == "Hidden":
@@ -138,9 +144,10 @@ class Game:
                 grid_space_clicked = self.board.get_grid_from_pixels(clicked_x, clicked_y)  # convert to grid spaces
                 print(grid_space_clicked)
 
-    def addObject(self, obj, layer="Layer1"):
+    def addObject(self, obj, layer="Layer1", isMinigame=True):
         self.objects[layer].append(obj)
         self.updateLayer(obj, layer)
+        obj.isMinigame = isMinigame
 
     def updateLayer(self, obj, layer="Layer1"):
         obj.layer = layer
@@ -153,6 +160,36 @@ class Game:
         pygame.quit()
         sys.exit()
 
+    def removeObject(self, obj):
+        self.objects[obj.layer].remove(obj)
+
+    def loadMinigame(self, minigame):
+        for key in self.objects:
+            if(key == "Hidden"):
+                for obj in self.objects["Hidden"]:
+                    obj.alreadyHidden = True
+                    continue
+
+            for obj in self.objects[key]:
+                obj.set_visible(False)
+
+        self.minigame = minigame(self).start()
+
+    def exitMinigame(self):
+        self.minigame.exitGame()
+        del self.minigame
+
+        for key in self.objects:
+
+            for obj in self.objects[key]:
+                
+                if(obj.isMinigame):
+                    self.removeObject(obj)
+                else:
+                    if(obj.alreadyHidden):
+                        obj.alreadyHidden = False
+                    else:
+                        obj.set_visible(True)
 
 if __name__ == "__main__":
     Game()
