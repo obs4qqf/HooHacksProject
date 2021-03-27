@@ -2,6 +2,7 @@ import pygame
 import sys
 import logging as log
 import testMiniGame
+import time
 
 pygame.init()
 
@@ -89,12 +90,10 @@ class testObject(GameObject):
 
 class Game:
 
-    
-
     def __init__(self):
 
         self.objects = {"Layer1":[],"Layer2":[],"Layer3":[],"Layer4":[],"Layer5":[],"Layer6":[],"Layer7":[],"Layer8":[],"Layer9":[],"Hidden":[]}
-        self.events = {"OnMouseUp":[],"OnMouseDown":[],"OnMouseMove":[],"OnKeyDown":[],"OnKeyUp":[]}
+        self.events = {"OnMouseUp":[],"OnMouseDown":[],"OnMouseMove":[],"OnKeyDown":[],"OnKeyUp":[], "OnRenderTick":[]}
 
         self.screen = pygame.display.set_mode(DEFAULT_SCREEN_SIZE, pygame.RESIZABLE, pygame.SCALED)
         self.board = BoardInfo(pygame.display.Info().current_w, pygame.display.Info().current_h, 10)
@@ -102,6 +101,7 @@ class Game:
         self.background = DEFAULT_SCREEN_BACKGROUND
 
         self.mousePosition = (0, 0)
+        self.lastTick = time.time()
 
         if(DEBUG_MINIGAME == True):
             self.loadMinigame(testMiniGame.minigame)
@@ -113,6 +113,11 @@ class Game:
     def gameLoop(self):
         while True:
             self.eventManager()
+
+            self.deltaTime = self.lastTick - time.time()
+            self.lastTick = time.time()
+
+            self.renderTick()
             self.render()
 
     def render(self):
@@ -132,7 +137,8 @@ class Game:
         pygame.display.update()
 
     def renderTick(self):
-        pass
+        for function in self.events["OnRenderTick"]:
+            function()
 
     def eventManager(self):
         
@@ -165,11 +171,11 @@ class Game:
 
             elif event.type == pygame.KEYDOWN:
                 for function in self.events["OnKeyDown"]:
-                    function(event.key)
+                    function(chr(event.key))
 
             elif event.type == pygame.KEYUP:
                 for function in self.events["OnKeyUp"]:
-                    function(event.key)
+                    function(chr(event.key))
 
     def addObject(self, obj, layer="Layer1", isMinigame=True):
         self.objects[layer].append(obj)
