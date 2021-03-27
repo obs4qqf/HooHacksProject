@@ -3,6 +3,7 @@ import sys
 import logging as log
 import testMiniGame
 import imagePuzzle
+import avoidWallsMiniGame
 import time
 
 pygame.init()
