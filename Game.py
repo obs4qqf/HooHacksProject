@@ -2,6 +2,7 @@ import pygame
 import sys
 import logging as log
 import testMiniGame
+import imagePuzzle
 import time
 
 pygame.init()
