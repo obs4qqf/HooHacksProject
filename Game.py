@@ -11,7 +11,7 @@ min_dimension = min(screen_width, screen_height)
 # STATIC VARIABLES
 DEFAULT_SCREEN_SIZE = (int(min_dimension / 1.5), int(min_dimension / 1.5))
 DEFAULT_SCREEN_BACKGROUND = 'white'
-DEFAULT_MINIGAME = 0
+DEFAULT_MINIGAME = testMiniGame.minigame
 
 
 
@@ -99,7 +99,8 @@ class Game:
 
         self.background = DEFAULT_SCREEN_BACKGROUND
 
-        self.loadMinigame(testMiniGame.minigame)
+        if(DEFAULT_MINIGAME != 0):
+            self.loadMinigame(DEFAULT_MINIGAME)
 
         #self.addObject(testObject())
 
