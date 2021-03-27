@@ -1,4 +1,5 @@
 import Game
+import GameObject
 import logging as log
 import sys
 import pygame
@@ -6,7 +7,7 @@ import pygame
 bullets = []
 
 
-class testObject(Game.PhysicsObject):
+class testObject(GameObject.PhysicsObject):
 
     playerSpeed = 100
 
@@ -52,7 +53,7 @@ class testObject(Game.PhysicsObject):
             if(self.isColliding(obj)):
                 print("Colliding")
 
-class collisionObject(Game.PhysicsObject):
+class collisionObject(GameObject.PhysicsObject):
 
     def __init__(self, game):
         super().__init__((100,100), [50,50])
@@ -60,6 +61,7 @@ class collisionObject(Game.PhysicsObject):
 
     def render(self, screen, camera):
         pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.pos[0], self.pos[1], self.collisionDimensions[0], self.collisionDimensions[1]))
+
 class minigame:
 
     def __init__(self, game):
