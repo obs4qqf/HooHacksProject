@@ -1,4 +1,5 @@
 import Game
+import GameObject
 import logging as log
 import sys
 import pygame
@@ -10,7 +11,7 @@ healthLength = 100
 introText = pygame.font.SysFont('Arial', 25)
 introTextRender = introText.render('Don\'t touch the walls!', False, (0, 0, 0))
 
-class testObject(Game.PhysicsObject):
+class testObject(GameObject.PhysicsObject):
 
     global introText
     global introTextRender
@@ -65,7 +66,7 @@ class testObject(Game.PhysicsObject):
                 print("Colliding")
                 healthLength = healthLength - 0.03
 
-class healthBar(Game.PhysicsObject):
+class healthBar(GameObject.PhysicsObject):
 
     def __init__(self, game):
         super().__init__((250,20), [100,10])
@@ -78,7 +79,7 @@ class healthBar(Game.PhysicsObject):
         screen.blit(textRender, (150,10))
         pygame.draw.rect(screen, (0, 0, 255), pygame.Rect(self.pos[0], self.pos[1], healthLength, 10))
 
-class collisionObject(Game.PhysicsObject):
+class collisionObject(GameObject.PhysicsObject):
 
     def __init__(self, game, xpos, ypos, xsize, ysize):
         super().__init__((xpos,ypos), [xsize, ysize])
